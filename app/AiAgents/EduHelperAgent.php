@@ -34,15 +34,35 @@ Rules:
     }
 
     public function prompt($message)
-    {
-        $lower = strtolower($message);
+{
+    $topicCheck = $this->classifyTopic($message);
 
-        foreach ($this->allowedTopics as $topic) {
-            if (str_contains($lower, $topic)) {
-                return $message; // send raw text to AI
-            }
-        }
-
+    if (!in_array($topicCheck, $this->allowedTopics)) {
         return "I can only help with Solar System, Fractions, or Water Cycle 😊";
     }
+
+    return $message;
+}
+
+private function classifyTopic($text)
+{
+    $keywords = [
+        'solar system' => ['planet', 'sun', 'orbit', 'space', 'earth', 'mars', 'galaxy'],
+        'fractions' => ['half', 'quarter', 'divide', 'numerator', 'denominator', 'part'],
+        'water cycle' => ['rain', 'evaporation', 'condensation', 'clouds', 'precipitation'],
+    ];
+
+    $text = strtolower($text);
+
+    foreach ($keywords as $topic => $words) {
+        foreach ($words as $word) {
+            if (str_contains($text, $word)) {
+                return $topic;
+            }
+        }
+    }
+
+    return 'unknown';
+}
+
 }
